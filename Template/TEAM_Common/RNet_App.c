@@ -22,7 +22,6 @@
 #include "RPHY.h"
 #include "Shell.h"
 #include "Motor.h"
-#include "TmDt1.h"
 #if PL_CONFIG_HAS_REMOTE
   #include "Remote.h"
 #endif
@@ -77,80 +76,6 @@ static uint8_t HandleDataRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *da
   (void)size;
   (void)packet;
   switch(type) {
-#if 0
-    case RAPP_MSG_TYPE_LAP_POINT:
-      if (size==2) {
-        *handled = TRUE;
-    #if PL_CONFIG_HAS_SHELL
-        UTIL1_strcpy(buf, sizeof(buf), (unsigned char*)"Group: ");
-        UTIL1_strcatNum8u(buf, sizeof(buf), *(data)); /* group number */
-        UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" Event: ");
-        UTIL1_chcat(buf, sizeof(buf), *(data+1)); /* event: 'A', 'B', 'C', 'X' or 'T' */
-        if (*(data+1)=='A' && timeA==0) {
-          timeA = xTaskGetTickCount();
-        } else if (*(data+1)=='A' && timeA!=0 && timeB==0 && timeC==0) { /* repeat A */
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" repeat A");
-        } else if (*(data+1)=='B' && timeA!=0 && timeB==0 && timeC==0) {
-          timeB = xTaskGetTickCount();
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" timeAB: ");
-          UTIL1_strcatNum32u(buf, sizeof(buf), timeB-timeA); /* time */
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" ms");
-        } else if (*(data+1)=='B' && timeA!=0 && timeB!=0 && timeC==0) { /* repeat B */
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" repeat B");
-        } else if (*(data+1)=='C' && timeA!=0 && timeB!=0 && timeC==0) {
-          timeC = xTaskGetTickCount();
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" timeAC: ");
-          UTIL1_strcatNum32u(buf, sizeof(buf), timeC-timeA); /* time */
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" ms");
-        } else if (*(data+1)=='C' && timeA==0 && timeB==0 && timeC==0) { /* repeat C */
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" repeat C");
-        } else if (*(data+1)=='T') { /* test */
-          UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" TEST");
-        } else {
-          if (*(data+1)=='X') { /* did not finish */
-            UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" DNF");
-          } else {
-            UTIL1_strcat(buf, sizeof(buf), (unsigned char*)" ERROR");
-          }
-          if (timeA==0) {
-            timeB = 5*60*1000;
-            timeC = timeB+5*60*1000;
-          } else if (timeB==0) {
-            timeB = timeA+5*60*1000;
-            timeC = timeB+5*60*1000;
-          } else { /* DNF for time C */
-            timeC = timeB+5*60*1000;
-          }
-        }
-        UTIL1_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-        CLS1_SendStr(buf, io->stdOut);
-        if (timeC!=0) {
-          DATEREC date;
-          TIMEREC time;
-
-          CLS1_SendStr((unsigned char*)"---------------------------------------\r\n", io->stdOut);
-          CLS1_SendStr((unsigned char*)"Date\tTime\tGroup\ttimeAB(ms)\ttimeAC(ms)\r\n", io->stdOut);
-          CLS1_SendStr((unsigned char*)"---------------------------------------\r\n", io->stdOut);
-          buf[0] = '\0';
-          (void)TmDt1_GetDate(&date);
-          (void)TmDt1_GetTime(&time);
-          (void)TmDt1_AddDateString(buf, sizeof(buf), &date, TmDt1_DEFAULT_DATE_FORMAT_STR);
-          UTIL1_chcat(buf, sizeof(buf), '\t');
-          (void)TmDt1_AddTimeString(buf, sizeof(buf), &time, TmDt1_DEFAULT_TIME_FORMAT_STR);
-          UTIL1_chcat(buf, sizeof(buf), '\t');
-          UTIL1_strcatNum8u(buf, sizeof(buf), *(data)); /* group number */
-          UTIL1_chcat(buf, sizeof(buf), '\t');
-          UTIL1_strcatNum32u(buf, sizeof(buf), timeB-timeA); /* time A to B */
-          UTIL1_chcat(buf, sizeof(buf), '\t');
-          UTIL1_strcatNum32u(buf, sizeof(buf), timeC-timeA); /* time A to C */
-          CLS1_SendStr(buf, io->stdOut);
-          CLS1_SendStr((unsigned char*)"\r\n---------------------------------------\r\n", io->stdOut);
-          timeA = timeB = timeC = 0;
-        }
-    #endif
-      }
-      break;
-#endif
     case RAPP_MSG_TYPE_DATA: /* generic data message */
       *handled = TRUE;
       val = *data; /* get data value */
