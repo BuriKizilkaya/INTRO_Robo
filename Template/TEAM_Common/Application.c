@@ -187,12 +187,14 @@ void APP_Start(void) {
 	__asm volatile("cpsie i");
 	/* enable interrupts */
 	for (;;) {
-		LED1_Off();
-		LED2_On();
-		WAIT1_Waitms(100);
-		LED1_On();
-		LED2_Off();
-		WAIT1_Waitms(100);
+		#if (PL_LOCAL_CONFIG_NOF_LEDS > 0)
+			LED1_Off();
+			LED2_On();
+			WAIT1_Waitms(100);
+			LED1_On();
+			LED2_Off();
+			WAIT1_Waitms(100);
+		#endif
 	}
 }
 
