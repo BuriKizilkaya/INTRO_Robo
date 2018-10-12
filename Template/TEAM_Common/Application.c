@@ -79,25 +79,24 @@ static void BtnMsg(int btn, const char *msg) {
 
 void APP_EventHandler(EVNT_Handle event) {
 	/*! \todo handle events */
-	switch(event) {
-		case EVNT_STARTUP:
-		{
-			int i;
-			for (i=0;i<5;i++) {
-				LED1_Neg();
-				WAIT1_Waitms(50);
-			}
-			LED1_Off();
+	switch (event) {
+	case EVNT_STARTUP: {
+		int i;
+		for (i = 0; i < 5; i++) {
+			LED1_Neg();
+			WAIT1_Waitms(50);
 		}
-		case EVNT_LED_HEARTBEAT:
+		LED1_Off();
+	}
+	case EVNT_LED_HEARTBEAT:
 		LED2_Neg();
 		break;
 #if PL_CONFIG_NOF_KEYS>=1
-		case EVNT_SW1_PRESSED:
+	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
 		break;
 #endif
-		default:
+	default:
 		break;
 	} /* switch */
 }
@@ -180,21 +179,31 @@ static void APP_AdoptToHardware(void) {
 #endif
 }
 
+
 void APP_Start(void) {
 	PL_Init();
 	APP_AdoptToHardware();
+	EVNT_Init();
 
 	__asm volatile("cpsie i");
+
+	EVNT_SetEvent(EVNT_LED_HEARTBEAT);
 	/* enable interrupts */
 	for (;;) {
+
+	#ifdef LED_WITHOUT_EVENTS
 		#if (PL_LOCAL_CONFIG_NOF_LEDS > 0)
-			LED1_Off();
-			LED2_On();
-			WAIT1_Waitms(100);
-			LED1_On();
-			LED2_Off();
-			WAIT1_Waitms(100);
+				LED1_Off();
+				LED2_On();
+				WAIT1_Waitms(100);
+				LED1_On();
+				LED2_Off();
+				WAIT1_Waitms(100);
 		#endif
+	#endif
+
+		EVNT_HandleEvent(APP_EventHandler, FALSE);
+		WAIT1_Waitms(500);
 	}
 }
 
