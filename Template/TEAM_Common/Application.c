@@ -187,7 +187,6 @@ void APP_Start(void) {
 
 	__asm volatile("cpsie i");
 
-	EVNT_SetEvent(EVNT_LED_HEARTBEAT);
 	/* enable interrupts */
 	for (;;) {
 
@@ -202,8 +201,7 @@ void APP_Start(void) {
 		#endif
 	#endif
 
-		EVNT_HandleEvent(APP_EventHandler, FALSE);
-		WAIT1_Waitms(500);
+		EVNT_HandleEvent(APP_EventHandler, TRUE);
 	}
 }
 
