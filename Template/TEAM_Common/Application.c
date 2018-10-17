@@ -179,29 +179,26 @@ static void APP_AdoptToHardware(void) {
 #endif
 }
 
-
 void APP_Start(void) {
 	PL_Init();
 	APP_AdoptToHardware();
 	EVNT_Init();
 
 	__asm volatile("cpsie i");
-
+	EVNT_SetEvent(EVNT_STARTUP); // Startup the System
 	/* enable interrupts */
 	for (;;) {
-
-	#ifdef LED_WITHOUT_EVENTS
-		#if (PL_LOCAL_CONFIG_NOF_LEDS > 0)
+		EVNT_HandleEvent(APP_EventHandler, TRUE);
+		#ifdef LED_WITHOUT_EVENTS
+			#if (PL_LOCAL_CONFIG_NOF_LEDS > 0)
 				LED1_Off();
 				LED2_On();
 				WAIT1_Waitms(100);
 				LED1_On();
 				LED2_Off();
 				WAIT1_Waitms(100);
+			#endif
 		#endif
-	#endif
-
-		EVNT_HandleEvent(APP_EventHandler, TRUE);
 	}
 }
 
