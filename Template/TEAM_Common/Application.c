@@ -94,6 +94,8 @@ void APP_EventHandler(EVNT_Handle event) {
 #if PL_CONFIG_NOF_KEYS>=1
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
+		LED1_Neg();
+		WAIT1_Waitms(50);
 		break;
 #endif
 	default:
@@ -189,16 +191,9 @@ void APP_Start(void) {
 	/* enable interrupts */
 	for (;;) {
 		EVNT_HandleEvent(APP_EventHandler, TRUE);
-		#ifdef LED_WITHOUT_EVENTS
-			#if (PL_LOCAL_CONFIG_NOF_LEDS > 0)
-				LED1_Off();
-				LED2_On();
-				WAIT1_Waitms(100);
-				LED1_On();
-				LED2_Off();
-				WAIT1_Waitms(100);
-			#endif
-		#endif
+
+
+		KEY_Scan();
 	}
 }
 
