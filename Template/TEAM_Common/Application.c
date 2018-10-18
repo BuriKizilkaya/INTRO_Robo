@@ -192,8 +192,6 @@ void APP_Start(void) {
 	for (;;) {
 		EVNT_HandleEvent(APP_EventHandler, TRUE);
 
-
-		KEY_Scan();
 	}
 }
 
