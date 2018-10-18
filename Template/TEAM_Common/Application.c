@@ -92,6 +92,7 @@ void APP_EventHandler(EVNT_Handle event) {
 		LED2_Neg();
 		break;
 #if PL_CONFIG_NOF_KEYS>=1
+<<<<<<< HEAD
 	case EVNT_SW1_PRESSED:{
 		int i;
 				for (i = 0; i < 5; i++) {
@@ -106,6 +107,12 @@ void APP_EventHandler(EVNT_Handle event) {
 						WAIT1_Waitms(50);
 					}
 					LED1_Off();}
+=======
+	case EVNT_SW1_PRESSED:
+		BtnMsg(1, "pressed");
+		LED1_Neg();
+		break;
+>>>>>>> f3c3fafa3ac1acc594f734145d6b10c2f5877cb8
 #endif
 	default:
 		break;
@@ -200,8 +207,11 @@ void APP_Start(void) {
 	/* enable interrupts */
 	for (;;) {
 
+<<<<<<< HEAD
 		EVNT_HandleEvent(APP_EventHandler, TRUE);
 
+=======
+>>>>>>> f3c3fafa3ac1acc594f734145d6b10c2f5877cb8
 	}
 }
 
