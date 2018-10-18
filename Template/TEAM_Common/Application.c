@@ -88,13 +88,13 @@ void APP_EventHandler(EVNT_Handle event) {
 		}
 		LED1_Off();
 	}
+	break;
 	case EVNT_LED_HEARTBEAT:
 		LED2_Neg();
 		break;
 #if PL_CONFIG_NOF_KEYS>=1
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
-		LED1_Neg();
 		break;
 #endif
 	default:
