@@ -93,20 +93,6 @@ void APP_EventHandler(EVNT_Handle event) {
 		LED2_Neg();
 		break;
 #if PL_CONFIG_NOF_KEYS>=1
-	case EVNT_SW1_PRESSED:{
-		int i;
-				for (i = 0; i < 5; i++) {
-					LED1_Neg();
-					WAIT1_Waitms(50);
-				}
-				LED1_Off();}
-	case EVNT_SW2_PRESSED:{
-			int i;
-					for (i = 0; i < 5; i++) {
-						LED1_Neg();
-						WAIT1_Waitms(50);
-					}
-					LED1_Off();}
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
 		break;
