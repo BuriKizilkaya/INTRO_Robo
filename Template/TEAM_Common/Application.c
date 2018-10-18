@@ -92,11 +92,20 @@ void APP_EventHandler(EVNT_Handle event) {
 		LED2_Neg();
 		break;
 #if PL_CONFIG_NOF_KEYS>=1
-	case EVNT_SW1_PRESSED:
-		BtnMsg(1, "pressed");
-		LED1_Neg();
-		WAIT1_Waitms(50);
-		break;
+	case EVNT_SW1_PRESSED:{
+		int i;
+				for (i = 0; i < 5; i++) {
+					LED1_Neg();
+					WAIT1_Waitms(50);
+				}
+				LED1_Off();}
+	case EVNT_SW2_PRESSED:{
+			int i;
+					for (i = 0; i < 5; i++) {
+						LED1_Neg();
+						WAIT1_Waitms(50);
+					}
+					LED1_Off();}
 #endif
 	default:
 		break;
@@ -190,10 +199,9 @@ void APP_Start(void) {
 	EVNT_SetEvent(EVNT_STARTUP); // Startup the System
 	/* enable interrupts */
 	for (;;) {
+
 		EVNT_HandleEvent(APP_EventHandler, TRUE);
 
-
-		KEY_Scan();
 	}
 }
 
