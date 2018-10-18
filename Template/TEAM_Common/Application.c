@@ -95,7 +95,6 @@ void APP_EventHandler(EVNT_Handle event) {
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
 		LED1_Neg();
-		WAIT1_Waitms(50);
 		break;
 #endif
 	default:
