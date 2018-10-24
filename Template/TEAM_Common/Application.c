@@ -97,6 +97,29 @@ void APP_EventHandler(EVNT_Handle event) {
 		BtnMsg(1, "pressed");
 		break;
 #endif
+
+/* The Remote Controller has more than 1 Key */
+#if PL_CONFIG_NOF_KEYS > 1
+	case EVNT_SW2_PRESSED:
+		BtnMsg(2, "pressed");
+		break;
+	case EVNT_SW3_PRESSED:
+		BtnMsg(3, "pressed");
+		break;
+	case EVNT_SW4_PRESSED:
+		BtnMsg(4, "pressed");
+		break;
+	case EVNT_SW5_PRESSED:
+		BtnMsg(5, "pressed");
+		break;
+	case EVNT_SW6_PRESSED:
+		BtnMsg(6, "pressed");
+		break;
+	case EVNT_SW7_PRESSED:
+		BtnMsg(7, "pressed");
+		break;
+#endif
+
 	default:
 		break;
 	} /* switch */
