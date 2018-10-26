@@ -213,6 +213,7 @@ void APP_Start(void) {
 	APP_AdoptToHardware();
 	EVNT_Init();
 	TRG_Init();
+	KEYDBNC_Init();
 #if PL_CONFIG_HAS_BUZZER
 	BUZ_Init();
 #endif
@@ -220,7 +221,9 @@ void APP_Start(void) {
 	__asm volatile("cpsie i");
 	EVNT_SetEvent(EVNT_STARTUP); // Startup the System
 
+#if PL_CONFIG_HAS_BUZZER
 	BUZ_PlayTune(1);
+#endif
 
 	/* enable interrupts */
 	for (;;) {

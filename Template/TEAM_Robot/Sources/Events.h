@@ -156,20 +156,7 @@ void QuadInt_OnInterrupt(void);
 void TI1_OnInterrupt(void);
 
 void SW1_OnInterrupt(void);
-/*
-** ===================================================================
-**     Event       :  SW1_OnInterrupt (module Events)
-**
-**     Component   :  SW1 [ExtInt]
-**     Description :
-**         This event is called when an active signal edge/level has
-**         occurred.
-**     Parameters  : None
-**     Returns     : Nothing
-** ===================================================================
-*/
 
-void FRTOS1_vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName);
 /*
 ** ===================================================================
 **     Event       :  FRTOS1_vApplicationStackOverflowHook (module Events)
