@@ -53,6 +53,7 @@
 #include "Reflectance.h"
 #endif
 #include "Sumo.h"
+#include "Trigger.h"
 
 #if PL_CONFIG_HAS_EVENTS
 
@@ -95,6 +96,8 @@ void APP_EventHandler(EVNT_Handle event) {
 #if PL_CONFIG_NOF_KEYS>=1
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
+		BUZ_Beep(100, 500);
+		CLS1_SendStr("Beep 100 Hz for 500 ms", CLS1_GetStdio()->stdOut);
 		break;
 #endif
 
@@ -203,13 +206,22 @@ static void APP_AdoptToHardware(void) {
 #endif
 }
 
+
+
 void APP_Start(void) {
 	PL_Init();
 	APP_AdoptToHardware();
 	EVNT_Init();
+	TRG_Init();
+#if PL_CONFIG_HAS_BUZZER
+	BUZ_Init();
+#endif
 
 	__asm volatile("cpsie i");
 	EVNT_SetEvent(EVNT_STARTUP); // Startup the System
+
+	BUZ_PlayTune(1);
+
 	/* enable interrupts */
 	for (;;) {
 		EVNT_HandleEvent(APP_EventHandler, TRUE);
