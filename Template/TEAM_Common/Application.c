@@ -96,7 +96,7 @@ void APP_EventHandler(EVNT_Handle event) {
 #if PL_CONFIG_NOF_KEYS>=1
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
-		BUZ_Beep(100, 500);
+		//BUZ_Beep(100, 500);
 		CLS1_SendStr("Beep 100 Hz for 500 ms\r\n", CLS1_GetStdio()->stdOut);
 		break;
 #endif
