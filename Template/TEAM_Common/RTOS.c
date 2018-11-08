@@ -11,28 +11,10 @@
 #include "Application.h"
 #include "LED.h"
 
-static void BlinkyTask(void* pvParameters) {
-	for (;;) {
-		EVNT_HandleEvent(APP_EventHandler, TRUE);
-		LED1_Neg();
-		vTaskDelay(pdMS_TO_TICKS(500));
-	}
-}
-
 void RTOS_Init(void) {
+
 	/*! \todo Create tasks here */
-	if (xTaskCreate(BlinkyTask,
-					"Blinky",
-					configMINIMAL_STACK_SIZE,
-					(void*) NULL,
-					tskIDLE_PRIORITY,
-					(xTaskHandle*) NULL) != pdPASS) {
-		for (;;) {}
-	} // end task create: Blinky
 
-
-	// Start Scheduler
-	vTaskStartScheduler();
 }
 
 void RTOS_Deinit(void) {

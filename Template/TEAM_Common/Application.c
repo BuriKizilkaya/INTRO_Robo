@@ -206,9 +206,13 @@ static void APP_AdoptToHardware(void) {
 #endif
 }
 
+static void AppTask(void){
+	for (;;) {
+		EVNT_HandleEvent(APP_EventHandler, TRUE);
+		vTaskDelay(pdMS_TO_TICKS(100)); /* Wait 100 ms */
+	}
 
-
-
+}
 
 void APP_Start(void) {
 	PL_Init();
@@ -223,6 +227,21 @@ void APP_Start(void) {
 #if PL_CONFIG_HAS_BUZZER
 	BUZ_PlayTune(1);
 #endif
+
+	//Create AppTask for EventHandler
+	if (xTaskCreate(AppTask,
+					"AppTask",
+					400/sizeof(StackType_t),
+					(void*) NULL,
+					tskIDLE_PRIORITY+3,
+					(xTaskHandle*) NULL) != pdPASS) {
+		for (;;) {
+		}
+	} // end task: AppTask
+
+
+	/* Start Scheduler */
+	vTaskStartScheduler();
 
 	/* Failsafe when RTOS terminted */
 	for (;;) {
