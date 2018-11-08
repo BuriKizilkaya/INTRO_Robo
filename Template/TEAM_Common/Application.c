@@ -97,7 +97,7 @@ void APP_EventHandler(EVNT_Handle event) {
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
 		BUZ_Beep(100, 500);
-		CLS1_SendStr("Beep 100 Hz for 500 ms", CLS1_GetStdio()->stdOut);
+		CLS1_SendStr("Beep 100 Hz for 500 ms\r\n", CLS1_GetStdio()->stdOut);
 		break;
 #endif
 
@@ -208,26 +208,24 @@ static void APP_AdoptToHardware(void) {
 
 
 
+
+
 void APP_Start(void) {
 	PL_Init();
 	APP_AdoptToHardware();
-	EVNT_Init();
-	TRG_Init();
-	KEYDBNC_Init();
-#if PL_CONFIG_HAS_BUZZER
-	BUZ_Init();
-#endif
 
-	__asm volatile("cpsie i");
-	EVNT_SetEvent(EVNT_STARTUP); // Startup the System
+	//__asm volatile("cpsie i");
 
+	// Startup the System
+	EVNT_SetEvent(EVNT_STARTUP);
+
+	// Welcome Sound
 #if PL_CONFIG_HAS_BUZZER
 	BUZ_PlayTune(1);
 #endif
 
-	/* enable interrupts */
+	/* Failsafe when RTOS terminted */
 	for (;;) {
-		EVNT_HandleEvent(APP_EventHandler, TRUE);
 	}
 }
 

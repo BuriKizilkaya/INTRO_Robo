@@ -227,7 +227,7 @@ void KEYDBNC_Process(void) {
    */
   /*! \todo Only debounce if you are not debouncing already */
 
-	if (KEYDBNC_FSMdata.state == DBNC_KEY_IDLE && KEYDBNC_GetKeys()) {
+	if (KEYDBNC_FSMdata.state == DBNC_KEY_IDLE && KEYDBNC_GetKeys() != 0) {
 		KEY_DisableInterrupts();
 		DBNC_Process(&KEYDBNC_FSMdata);
 	}
