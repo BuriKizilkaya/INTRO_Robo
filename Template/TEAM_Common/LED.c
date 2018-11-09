@@ -37,11 +37,11 @@ void LED_Init(void) {
 
 #if PL_CONFIG_HAS_RTOS
   if (xTaskCreate(BlinkyTask,
-					"Blinky",
-					configMINIMAL_STACK_SIZE,
-					(void*) NULL,
-					tskIDLE_PRIORITY,
-					(xTaskHandle*) NULL) != pdPASS) {
+				  "Blinky",
+				  configMINIMAL_STACK_SIZE,
+				  (void*) NULL,
+				  tskIDLE_PRIORITY,
+				  (xTaskHandle*) NULL) != pdPASS) {
 		for (;;) {
 		}
   	} // end task: Blinky

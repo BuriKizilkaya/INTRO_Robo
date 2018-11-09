@@ -96,7 +96,9 @@ void APP_EventHandler(EVNT_Handle event) {
 #if PL_CONFIG_NOF_KEYS>=1
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
+#if PL_CONFIG_HAS_BUZZER
 		BUZ_Beep(100, 500);
+#endif
 		CLS1_SendStr("Beep 100 Hz for 500 ms\r\n", CLS1_GetStdio()->stdOut);
 		break;
 #endif
@@ -206,12 +208,12 @@ static void APP_AdoptToHardware(void) {
 #endif
 }
 
+/* Task for check the Event-Queue */
 static void AppTask(void){
 	for (;;) {
 		EVNT_HandleEvent(APP_EventHandler, TRUE);
 		vTaskDelay(pdMS_TO_TICKS(100)); /* Wait 100 ms */
 	}
-
 }
 
 void APP_Start(void) {
