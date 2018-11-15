@@ -233,9 +233,9 @@ void APP_Start(void) {
 	//Create AppTask for EventHandler
 	if (xTaskCreate(AppTask,
 					"AppTask",
-					400/sizeof(StackType_t),
+					500/sizeof(StackType_t),
 					(void*) NULL,
-					tskIDLE_PRIORITY+3,
+					tskIDLE_PRIORITY,
 					(xTaskHandle*) NULL) != pdPASS) {
 		for (;;) {
 		}
