@@ -36,6 +36,9 @@
 #if PL_CONFIG_HAS_SHELL_QUEUE
   #include "ShellQueue.h"
 #endif
+#if PL_CONFIG_HAS_ZORK
+	#include "zork_config.h"
+#endif
 #if PL_CONFIG_HAS_SEMAPHORE
   #include "Sem.h"
 #endif
@@ -169,6 +172,9 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_HAS_SUMO
   SUMO_Init();
+#endif
+#if PL_CONFIG_HAS_ZORK
+  zork_init();
 #endif
 }
 

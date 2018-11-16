@@ -23,6 +23,9 @@
 #if PL_CONFIG_HAS_SHELL_QUEUE
   #include "ShellQueue.h"
 #endif
+#if PL_CONFIG_HAS_ZORK
+	#include "zork_config.h"
+#endif
 #if PL_CONFIG_HAS_REFLECTANCE
   #include "Reflectance.h"
 #endif
@@ -315,6 +318,9 @@ static uint8_t SHELL_PrintHelp(const CLS1_StdIOType *io) {
   CLS1_SendHelpStr("Shell", "Shell commands\r\n", io->stdOut);
   CLS1_SendHelpStr("  help|status", "Print help or status information\r\n", io->stdOut);
   CLS1_SendHelpStr("  val <num>", "Assign number value\r\n", io->stdOut);
+#if PL_CONFIG_HAS_ZORK
+  CLS1_SendHelpStr("  play zork", "Start the game Zork\r\n", io->stdOut);
+#endif
   return ERR_OK;
 }
 
@@ -352,6 +358,14 @@ static uint8_t SHELL_ParseCommand(const unsigned char *cmd, bool *handled, const
       return ERR_FAILED; /* wrong format of command? */
     }
   }
+#if PL_CONFIG_HAS_ZORK
+  else if(UTIL1_strncmp(cmd, "Shell play zork", sizeof("Shell play zork")) == 0){
+	  zork_config();
+	  vTaskResume(Get_ZorkTaskHandle());
+	  vTaskSuspend(Get_ShellTaskHandle());
+	  *handled = TRUE;
+  }
+#endif
   return ERR_OK;
 }
 
@@ -360,6 +374,12 @@ void SHELL_ParseCmd(uint8_t *cmd) {
 }
 
 #if PL_CONFIG_HAS_RTOS
+TaskHandle_t ShellTaskHandle;
+
+TaskHandle_t Get_ShellTaskHandle(void){
+	return ShellTaskHandle;
+}
+
 static void ShellTask(void *pvParameters) {
   int i;
   /*! \todo Extend as needed */
@@ -386,6 +406,11 @@ static void ShellTask(void *pvParameters) {
 #elif PL_CONFIG_HAS_SHELL_QUEUE /* !PL_CONFIG_SQUEUE_SINGLE_CHAR */
     {
       /*! \todo Handle shell queue */
+    	if (SQUEUE_NofElements()>0) {
+    		char* msg = SQUEUE_ReceiveMessage();
+    		CLS1_SendStr(msg, ios[0].stdio->stdOut);
+			vPortFree((void*)msg); /* Its necessary for clean the Heap. Otherwise its possible for malloc failed */
+		}
    }
 #endif /* PL_CONFIG_HAS_SHELL_QUEUE */
     vTaskDelay(pdMS_TO_TICKS(10));
@@ -397,7 +422,7 @@ void SHELL_Init(void) {
   SHELL_val = 0;
   CLS1_SetStdio(SHELL_GetStdio()); /* set default standard I/O to RTT */
 #if PL_CONFIG_HAS_RTOS
-  if (xTaskCreate(ShellTask, "Shell", 900/sizeof(StackType_t), NULL, tskIDLE_PRIORITY+1, NULL) != pdPASS) {
+  if (xTaskCreate(ShellTask, "Shell", 900/sizeof(StackType_t), NULL, tskIDLE_PRIORITY+1, &ShellTaskHandle) != pdPASS) {
     for(;;){} /* error */
   }
 #endif

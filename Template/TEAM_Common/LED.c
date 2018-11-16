@@ -10,16 +10,27 @@
 #if PL_CONFIG_HAS_LEDS
 #include "LED.h"
 
+#if PL_CONFIG_HAS_SHELL
+#include "Shell.h"
+#if PL_CONFIG_HAS_SHELL_QUEUE
+#include "ShellQueue.h"
+#endif
+
+#endif
+
 #if PL_CONFIG_HAS_RTOS
 #include "FRTOS1.h"
 #endif
 
+#if PL_CONFIG_HAS_RTOS
 static void BlinkyTask(void* pvParameters) {
 	for (;;) {
 		LED1_Neg();
+		//SQUEUE_SendString((unsigned char*)"Hello!");
 		vTaskDelay(pdMS_TO_TICKS(500));
 	}
 }
+#endif
 
 void LED_Deinit(void) {
   LED1_Off();
@@ -35,7 +46,7 @@ void LED_Init(void) {
   LED2_Off();
   LED3_Off();
 
-#if PL_CONFIG_HAS_RTOS
+#if 0//PL_CONFIG_HAS_RTOS
   if (xTaskCreate(BlinkyTask,
 				  "Blinky",
 				  configMINIMAL_STACK_SIZE,

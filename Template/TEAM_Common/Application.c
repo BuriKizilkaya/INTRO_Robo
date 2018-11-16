@@ -5,7 +5,6 @@
  *
  * This provides the main application entry point.
  */
-
 #include "Platform.h"
 #include "Application.h"
 #include "Event.h"
@@ -21,6 +20,9 @@
 #if PL_CONFIG_HAS_SHELL
 #include "CLS1.h"
 #include "Shell.h"
+#if PL_CONFIG_HAS_SHELL_QUEUE
+#include "ShellQueue.h"
+#endif
 #include "RTT1.h"
 #endif
 #if PL_CONFIG_HAS_BUZZER
@@ -67,7 +69,13 @@ static void BtnMsg(int btn, const char *msg) {
 	UTIL1_strcat(buf, sizeof(buf), ": ");
 	UTIL1_strcatNum32s(buf, sizeof(buf), btn);
 	UTIL1_strcat(buf, sizeof(buf), "\r\n");
+
+#if PL_CONFIG_HAS_SHELL_QUEUE
+	SQUEUE_SendString(buf);
+#else
 	SHELL_SendString(buf);
+#endif
+
 #else
 	CLS1_SendStr("Button pressed: ", CLS1_GetStdio()->stdOut);
 	CLS1_SendStr(msg, CLS1_GetStdio()->stdOut);
@@ -221,7 +229,6 @@ void APP_Start(void) {
 	APP_AdoptToHardware();
 
 	//__asm volatile("cpsie i");
-
 	// Startup the System
 	EVNT_SetEvent(EVNT_STARTUP);
 
@@ -229,7 +236,6 @@ void APP_Start(void) {
 #if PL_CONFIG_HAS_BUZZER
 	BUZ_PlayTune(1);
 #endif
-
 	//Create AppTask for EventHandler
 	if (xTaskCreate(AppTask,
 					"AppTask",

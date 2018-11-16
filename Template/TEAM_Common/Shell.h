@@ -10,6 +10,14 @@
 #define SHELL_H_
 
 #include "Platform.h"
+
+#if PL_CONFIG_HAS_RTOS
+	#include "FRTOS1.h"
+	extern TaskHandle_t ShellTaskHandle;
+
+	TaskHandle_t Get_ShellTaskHandle(void);
+#endif
+
 #if PL_CONFIG_HAS_SHELL
 
 #include "CLS1.h"
@@ -37,6 +45,8 @@ void SHELL_Init(void);
 
 /*! \brief Shell driver de-initialization */
 void SHELL_Deinit(void);
+
+
 
 #endif /* PL_CONFIG_HAS_SHELL */
 
