@@ -66,7 +66,7 @@
 #define PL_LOCAL_CONFIG_HAS_PID_DISABLED                  /* disable PID */
 #define PL_LOCAL_CONFIG_HAS_DRIVE_DISABLED                /* disable drive module */
 #define PL_LOCAL_CONFIG_HAS_LINE_FOLLOW_DISABLED          /* disable line following */
-//#define PL_LOCAL_CONFIG_HAS_ZORK_GAME_DISABLED			  /* disable zork game */
+#define PL_LOCAL_CONFIG_HAS_ZORK_GAME_DISABLED			  /* disable zork game */
 
 #define PL_LOCAL_CONFIG_HAS_DISTANCE_DISABLED             /* disabling distance sensors */
 #define PL_LOCAL_CONFIG_HAS_TOF_SENSOR_DISABLED           /* disabling ToF sensors */
