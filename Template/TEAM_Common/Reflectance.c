@@ -141,31 +141,37 @@ static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
   uint8_t i;
   RefCnt_TValueType timerVal;
   /*! \todo Consider reentrancy and mutual exclusion! */
-
+#define REF_SENSOR_TIMEOUT_US 800
+#define REF_TIMEOUT_TICKS ((RefCnt_CNT_INP_FREQ_U_0/1000)*REF_SENSOR_TIMEOUT_US)/ 1000
   LED_IR_On(); /* IR LED's on */
   WAIT1_Waitus(200);
-  taskENTER_CRITICAL();
   for(i=0;i<REF_NOF_SENSORS;i++) {
     SensorFctArray[i].SetOutput(); /* turn I/O line as output */
     SensorFctArray[i].SetVal(); /* put high */
     raw[i] = MAX_SENSOR_VALUE;
   }
   WAIT1_Waitus(50); /* give at least 10 us to charge the capacitor */
+  taskENTER_CRITICAL();
   for(i=0;i<REF_NOF_SENSORS;i++) {
     SensorFctArray[i].SetInput(); /* turn I/O line as input */
   }
   (void)RefCnt_ResetCounter(timerHandle); /* reset timer counter */
   do {
     timerVal = RefCnt_GetCounterValue(timerHandle);
-    cnt = 0;
-    for(i=0;i<REF_NOF_SENSORS;i++) {
-      if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
-        if (SensorFctArray[i].GetVal()==0) {
-          raw[i] = (uint16_t)timerVal;
-        }
-      } else { /* have value */
-        cnt++;
-      }
+    if(timerVal < REF_TIMEOUT_TICKS) {
+		cnt = 0;
+		for(i=0;i<REF_NOF_SENSORS;i++) {
+		  if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
+			if (SensorFctArray[i].GetVal()==0) {
+			  raw[i] = (uint16_t)timerVal;
+			}
+		  } else { /* have value */
+			cnt++;
+		  }
+		}
+    }
+    else{
+    	break;
     }
   } while(cnt!=REF_NOF_SENSORS);
   taskEXIT_CRITICAL();

@@ -38,6 +38,8 @@ extern "C" {
 #include "Timer.h"
 #include "Keys.h"
 #include "Trigger.h"
+#include "Q4CLeft.h"
+#include "Q4CRight.h"
 
 
 /*
@@ -77,6 +79,8 @@ void Cpu_OnNMIINT(void)
 void QuadInt_OnInterrupt(void)
 {
   /* Write your code here ... */
+	Q4CLeft_Sample();
+	Q4CRight_Sample();
 }
 
 /*

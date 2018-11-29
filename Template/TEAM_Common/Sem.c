@@ -11,6 +11,9 @@
  * \brief Semaphore usage
  * \author Erich Styger, erich.styger@hslu.ch
  *
+ * Es soll eine Hierarchische Task initialisierung sein. Das bedeutet zuerst soll der MasterTask c
+ *
+ *
  * Module using semaphores.
  */
 
