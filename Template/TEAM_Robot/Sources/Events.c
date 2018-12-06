@@ -40,6 +40,7 @@ extern "C" {
 #include "Trigger.h"
 #include "Q4CLeft.h"
 #include "Q4CRight.h"
+#include "Tacho.h"
 
 
 /*
@@ -101,6 +102,7 @@ void TI1_OnInterrupt(void)
 {
   /* Write your code here ... */
   TRG_AddTick();
+  TACHO_Sample();
 }
 
 /*
