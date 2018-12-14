@@ -46,7 +46,7 @@ void LED_Init(void) {
   LED2_Off();
   LED3_Off();
 
-#if 0//PL_CONFIG_HAS_RTOS
+#if 1//PL_CONFIG_HAS_RTOS
   if (xTaskCreate(BlinkyTask,
 				  "Blinky",
 				  configMINIMAL_STACK_SIZE,

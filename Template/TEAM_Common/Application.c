@@ -101,15 +101,28 @@ void APP_EventHandler(EVNT_Handle event) {
 	case EVNT_LED_HEARTBEAT:
 		LED2_Neg();
 		break;
+
 #if PL_CONFIG_NOF_KEYS>=1
 	case EVNT_SW1_PRESSED:
 		BtnMsg(1, "pressed");
-#if PL_CONFIG_HAS_BUZZER
-		BUZ_Beep(100, 500);
-#endif
+		#if PL_CONFIG_HAS_BUZZER
+				BUZ_Beep(100, 500);
+		#endif
 		CLS1_SendStr("Beep 100 Hz for 500 ms\r\n", CLS1_GetStdio()->stdOut);
-		break;
+
+		// Start Line Follow
+		#if PL_CONFIG_HAS_LINE_FOLLOW
+				if (!LF_IsFollowing()) {
+					WAIT1_WaitOSms(100);
+					LF_StartFollowing();
+				} else{
+					LF_StopFollowing();
+				}
+		#endif
+		break; //end EVNT_SW1_PRESSED
 #endif
+
+
 
 /* The Remote Controller has more than 1 Key */
 #if PL_CONFIG_NOF_KEYS > 1
