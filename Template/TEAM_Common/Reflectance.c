@@ -139,9 +139,10 @@ void REF_CalibrateStartStop(void) {
 static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
   uint8_t cnt; /* number of sensor */
   uint8_t i;
+  bool isTimeout = FALSE;
   RefCnt_TValueType timerVal;
   /*! \todo Consider reentrancy and mutual exclusion! */
-#define REF_SENSOR_TIMEOUT_US 800
+#define REF_SENSOR_TIMEOUT_US 700
 #define REF_TIMEOUT_TICKS ((RefCnt_CNT_INP_FREQ_U_0/1000)*REF_SENSOR_TIMEOUT_US)/ 1000
   LED_IR_On(); /* IR LED's on */
   WAIT1_Waitus(200);
@@ -156,26 +157,32 @@ static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
     SensorFctArray[i].SetInput(); /* turn I/O line as input */
   }
   (void)RefCnt_ResetCounter(timerHandle); /* reset timer counter */
-  do {
-    timerVal = RefCnt_GetCounterValue(timerHandle);
-    if(timerVal < REF_TIMEOUT_TICKS) {
+	do {
 		cnt = 0;
-		for(i=0;i<REF_NOF_SENSORS;i++) {
-		  if (raw[i]==MAX_SENSOR_VALUE) { /* not measured yet? */
-			if (SensorFctArray[i].GetVal()==0) {
-			  raw[i] = (uint16_t)timerVal;
-			}
-		  } else { /* have value */
-			cnt++;
-		  }
+		timerVal = RefCnt_GetCounterValue(timerHandle);
+		if (timerVal > REF_TIMEOUT_TICKS) {
+			isTimeout = TRUE;
+			break;
 		}
-    }
-    else{
-    	break;
-    }
-  } while(cnt!=REF_NOF_SENSORS);
-  taskEXIT_CRITICAL();
-  LED_IR_Off(); /* IR LED's off */
+		for (i = 0; i < REF_NOF_SENSORS; i++) {
+			if (raw[i] == MAX_SENSOR_VALUE) { /* not measured yet? */
+				if (SensorFctArray[i].GetVal() == 0) {
+					raw[i] = (uint16_t) timerVal;
+				}
+			} else { /* have value */
+				cnt++;
+			}
+		}
+	} while (cnt != REF_NOF_SENSORS);
+	taskEXIT_CRITICAL();
+	LED_IR_Off(); /* IR LED's off */
+//	if (isTimeout) {
+//		for (i = 0; i < REF_NOF_SENSORS; i++) {
+//			if (raw[i] == MAX_SENSOR_VALUE) { /* not measured yet? */
+//					raw[i] = timerVal; /* use calibrated max value */
+//			}
+//		} /* for */
+//	} /* if (isTimeout) */
 }
 
 static void REF_CalibrateMinMax(SensorTimeType min[REF_NOF_SENSORS], SensorTimeType max[REF_NOF_SENSORS], SensorTimeType raw[REF_NOF_SENSORS]) {
@@ -313,13 +320,13 @@ static REF_LineKind ReadLineKind(SensorTimeType val[REF_NOF_SENSORS]) {
   #define MIN_LEFT_RIGHT_SUM   ((REF_NOF_SENSORS*1000)/4) /* 1/4 of full sensor values */
 
   if (outerLeft>=REF_MIN_LINE_VAL && outerRight<REF_MIN_LINE_VAL && sumLeft>MIN_LEFT_RIGHT_SUM && sumRight<MIN_LEFT_RIGHT_SUM) {
-#if PL_APP_LINE_MAZE
+#if 1 || PL_APP_LINE_MAZE
     return REF_LINE_LEFT; /* line going to the left side */
 #else
     return REF_LINE_STRAIGHT;
 #endif
   } else if (outerLeft<REF_MIN_LINE_VAL && outerRight>=REF_MIN_LINE_VAL && sumRight>MIN_LEFT_RIGHT_SUM && sumLeft<MIN_LEFT_RIGHT_SUM) {
-#if PL_APP_LINE_MAZE
+#if 1 || PL_APP_LINE_MAZE
     return REF_LINE_RIGHT; /* line going to the right side */
 #else
     return REF_LINE_STRAIGHT;
@@ -334,7 +341,7 @@ static REF_LineKind ReadLineKind(SensorTimeType val[REF_NOF_SENSORS]) {
 }
 #endif
 
-#if 1 || PL_CONFIG_HAS_LINE_FOLLOW
+#if 0 || PL_CONFIG_HAS_LINE_FOLLOW
 static REF_LineKind refLineKind = REF_LINE_NONE;
 
 REF_LineKind REF_GetLineKind(void) {
@@ -345,7 +352,7 @@ REF_LineKind REF_GetLineKind(void) {
 static void REF_Measure(void) {
   ReadCalibrated(SensorCalibrated, SensorRaw);
   refCenterLineVal = ReadLine(SensorCalibrated, SensorRaw, REF_USE_WHITE_LINE);
-#if 1 || PL_CONFIG_HAS_LINE_FOLLOW
+#if 0 || PL_CONFIG_HAS_LINE_FOLLOW
   refLineKind = ReadLineKind(SensorCalibrated);
 #endif
 }
@@ -602,7 +609,7 @@ void REF_Init(void) {
   refState = REF_STATE_INIT;
   timerHandle = RefCnt_Init(NULL);
   /*! \todo You might need to adjust priority or other task settings */
-  if (xTaskCreate(ReflTask, "Refl", 600/sizeof(StackType_t), NULL, tskIDLE_PRIORITY, NULL) != pdPASS) {
+  if (xTaskCreate(ReflTask, "Refl", 700/sizeof(StackType_t), NULL, 1, NULL) != pdPASS) {
     for(;;){} /* error */
   }
 }

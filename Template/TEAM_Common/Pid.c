@@ -495,7 +495,21 @@ void PID_Init(void) {
   config.posRightConfig.integral = config.posLeftConfig.integral;
   config.posRightConfig.maxSpeedPercent = config.posLeftConfig.maxSpeedPercent;
 
-  PID_LoadSettingsFromFlash();
+  PID_LoadSettingsFromFlash(); // load old values from flash
+}
+
+
+/* It's possible to change speed for line follow */
+void PID_SetLineFollowMaxSpeedPercent(uint8 value){
+	EnterCritical();
+	if (value > 100) {
+		config.lineFwConfig.maxSpeedPercent = 100;
+	} else if (value < 0) {
+		config.lineFwConfig.maxSpeedPercent = 0;
+	} else {
+		config.lineFwConfig.maxSpeedPercent = value;
+	}
+	ExitCritical();
 }
 
 #endif /* PL_CONFIG_HAS_PID */

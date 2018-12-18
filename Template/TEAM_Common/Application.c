@@ -56,6 +56,9 @@
 #endif
 #include "Sumo.h"
 #include "Trigger.h"
+#if PL_CONFIG_HAS_RADIO
+#include "RStdIO.h"
+#endif
 
 #if PL_CONFIG_HAS_EVENTS
 
@@ -87,6 +90,8 @@ static void BtnMsg(int btn, const char *msg) {
 }
 
 void APP_EventHandler(EVNT_Handle event) {
+	static bool isLineStart = FALSE;
+
 	/*! \todo handle events */
 	switch (event) {
 	case EVNT_STARTUP: {
@@ -113,7 +118,7 @@ void APP_EventHandler(EVNT_Handle event) {
 		// Start Line Follow
 		#if PL_CONFIG_HAS_LINE_FOLLOW
 				if (!LF_IsFollowing()) {
-					WAIT1_WaitOSms(100);
+					WAIT1_WaitOSms(200);
 					LF_StartFollowing();
 				} else{
 					LF_StopFollowing();
@@ -131,12 +136,38 @@ void APP_EventHandler(EVNT_Handle event) {
 		break;
 	case EVNT_SW3_PRESSED:
 		BtnMsg(3, "pressed");
+		if (RSTDIO_SendToTxStdio(RSTDIO_QUEUE_TX_IN, "pid fw speed 50\n", UTIL1_strlen((char* )"pid fw speed 80\n")) != ERR_OK) {
+			CLS1_SendStr((unsigned char*) "failed!\r\n", CLS1_GetStdio()->stdErr);
+		}
+		CLS1_SendStr((unsigned char*) "sending was successfull!\r\n", CLS1_GetStdio()->stdOut);
 		break;
 	case EVNT_SW4_PRESSED:
 		BtnMsg(4, "pressed");
+		if (!isLineStart) {
+			if (RSTDIO_SendToTxStdio(RSTDIO_QUEUE_TX_IN, "line start\n",UTIL1_strlen((char* )"line start\n")) != ERR_OK) {
+				CLS1_SendStr((unsigned char*) "failed!\r\n", CLS1_GetStdio()->stdErr);
+				break;
+			}
+			isLineStart = TRUE;
+		} else {
+			if (RSTDIO_SendToTxStdio(RSTDIO_QUEUE_TX_IN, "line stop\n",UTIL1_strlen((char* )"line start\n")) != ERR_OK) {
+				CLS1_SendStr((unsigned char*) "failed!\r\n", CLS1_GetStdio()->stdErr);
+				break;
+			}
+			isLineStart = FALSE;
+		}
+		WAIT1_WaitOSms(200);
+
+
+		CLS1_SendStr((unsigned char*) "sending was successfull!\r\n", CLS1_GetStdio()->stdOut);
+
 		break;
 	case EVNT_SW5_PRESSED:
 		BtnMsg(5, "pressed");
+		if (RSTDIO_SendToTxStdio(RSTDIO_QUEUE_TX_IN, "pid fw speed 30\n", UTIL1_strlen((char* )"pid fw speed 30\n")) != ERR_OK) {
+			CLS1_SendStr((unsigned char*) "failed!\r\n", CLS1_GetStdio()->stdErr);
+		}
+		CLS1_SendStr((unsigned char*) "sending was successfull!\r\n", CLS1_GetStdio()->stdOut);
 		break;
 	case EVNT_SW6_PRESSED:
 		BtnMsg(6, "pressed");
@@ -252,7 +283,7 @@ void APP_Start(void) {
 	//Create AppTask for EventHandler
 	if (xTaskCreate(AppTask,
 					"AppTask",
-					500/sizeof(StackType_t),
+					700/sizeof(StackType_t),
 					(void*) NULL,
 					tskIDLE_PRIORITY,
 					(xTaskHandle*) NULL) != pdPASS) {

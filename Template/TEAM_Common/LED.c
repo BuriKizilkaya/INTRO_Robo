@@ -49,7 +49,7 @@ void LED_Init(void) {
 #if 1//PL_CONFIG_HAS_RTOS
   if (xTaskCreate(BlinkyTask,
 				  "Blinky",
-				  configMINIMAL_STACK_SIZE,
+				  300/sizeof(StackType_t),
 				  (void*) NULL,
 				  tskIDLE_PRIORITY,
 				  (xTaskHandle*) NULL) != pdPASS) {

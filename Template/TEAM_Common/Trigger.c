@@ -11,6 +11,7 @@
 #include "Trigger.h"
 #include "CS1.h"
 #include <stddef.h> /* for NULL */
+#include "SYS1.h"
 
 /*! \brief Descriptor for a trigger. */
 typedef struct TRG_TriggerDesc {

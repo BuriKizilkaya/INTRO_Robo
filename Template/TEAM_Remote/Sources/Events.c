@@ -36,6 +36,7 @@ extern "C" {
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "Keys.h"
+#include "Trigger.h"
 
 /*
 ** ===================================================================
@@ -73,6 +74,7 @@ void Cpu_OnNMIINT(void)
 void TI1_OnInterrupt(void)
 {
   /* Write your code here ... */
+	TRG_AddTick();
 }
 
 /*

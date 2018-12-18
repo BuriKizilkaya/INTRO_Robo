@@ -74,6 +74,8 @@ void PID_Init(void);
 /*! \brief Driver de-initialization */
 void PID_Deinit(void);
 
+void PID_SetLineFollowMaxSpeedPercent(uint8 value);
+
 #endif /* PL_CONFIG_HAS_PID */
 
 #endif /* PID_H_ */

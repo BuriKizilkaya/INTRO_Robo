@@ -103,21 +103,27 @@ static void StateMachine(void) {
 #if PL_CONFIG_HAS_TURN
     case STATE_TURN:
       lineKind = REF_GetLineKind();
-
 		switch (lineKind) {
 			case REF_LINE_FULL:
-				LF_currState = STATE_FINISHED;
+//				LF_currState = STATE_FINISHED;
+				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+				LF_currState = STATE_FOLLOW_SEGMENT;
+				// Play Christmas-sounds
 				break;
 			case REF_LINE_STRAIGHT:
-
+				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 			case REF_LINE_LEFT:
-				TURN_Turn(TURN_LEFT45, NULL);
-
+				TURN_Turn(TURN_LEFT15, NULL);
+				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 
 			case REF_LINE_RIGHT:
-
+				TURN_Turn(TURN_RIGHT15, NULL);
+				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 
 			case REF_LINE_NONE:
@@ -128,15 +134,17 @@ static void StateMachine(void) {
 
 			default:
 				LF_currState = STATE_STOP;
+				DRV_SetMode(DRV_MODE_NONE);
 				break;
 		}
-      break;
-#endif
+
+    break;
     case STATE_FINISHED:
       SHELL_SendString("Finished!\r\n");
       BUZ_Beep(1000, 2000);
       LF_currState = STATE_STOP;
       break;
+#endif
 
     case STATE_STOP:
 #if 0
