@@ -37,7 +37,7 @@
   /*!< number of steps stepping over the line */
 #define TURN_STEPS_POST_LINE  80
   /*!< number of steps after the line, before making a turn */
-#define TURN_STEPS_90_TIMEOUT_MS        4*100
+#define TURN_STEPS_90_TIMEOUT_MS        100
 #define TURN_STEPS_LINE_TIMEOUT_MS      200
 #define TURN_STEPS_POST_LINE_TIMEOUT_MS 200
 #define TURN_STEPS_STOP_TIMEOUT_MS      150
@@ -92,7 +92,7 @@ void TURN_MoveToPos(int32_t targetLPos, int32_t targetRPos, bool wait, TURN_Stop
       break;
     }
   } /* for */
-#if 1 && PL_CONFIG_HAS_SHELL
+#if 0 && PL_CONFIG_HAS_SHELL
   if (timeoutMs<=0) {
     SHELL_SendString((unsigned char*)"MoveToPos Timeout.\r\n");
   }
@@ -112,7 +112,7 @@ static void StepsTurn(int32_t stepsL, int32_t stepsR, TURN_StopFct stopIt, int32
     timeout-=5;
     WAIT1_WaitOSms(5);
   }
-#if 1 && PL_CONFIG_HAS_SHELL
+#if 0 && PL_CONFIG_HAS_SHELL
   if (timeout<=0) {
     SHELL_SendString((unsigned char*)"StepsTurn Stopping Timeout.\r\n");
   }

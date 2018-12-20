@@ -96,6 +96,7 @@ static void StateMachine(void) {
       break;
 
     case STATE_FOLLOW_SEGMENT:
+    	vTaskDelay(pdMS_TO_TICKS(50));
       if (!FollowSegment()) {
         //SHELL_SendString((unsigned char*)"No line, stopped!\r\n");
         //LF_currState = STATE_STOP; /* stop if we do not have a line any more */
@@ -132,36 +133,42 @@ static void StateMachine(void) {
 				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 			case REF_LINE_LEFT:
-				do {
-					TURN_Turn(TURN_LEFT15, NULL);
-					vTaskDelay(pdMS_TO_TICKS(50));
-					lineKind = REF_GetLineKind();
-				} while (lineKind != REF_LINE_STRAIGHT);
-				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+//				do {
+//					TURN_Turn(TURN_LEFT15, NULL);
+//					vTaskDelay(pdMS_TO_TICKS(50));
+//					lineKind = REF_GetLineKind();
+//				} while (lineKind != REF_LINE_STRAIGHT);
+//				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
 				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 
 			case REF_LINE_RIGHT:
-				do {
-					TURN_Turn(TURN_RIGHT15, NULL);
-					vTaskDelay(pdMS_TO_TICKS(50));
-					lineKind = REF_GetLineKind();
-				} while (lineKind != REF_LINE_STRAIGHT);
-				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+//				do {
+//					TURN_Turn(TURN_RIGHT15, NULL);
+//					vTaskDelay(pdMS_TO_TICKS(50));
+//					lineKind = REF_GetLineKind();
+//				} while (lineKind != REF_LINE_STRAIGHT);
+//				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
 				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 
 			case REF_LINE_NONE:
 				if (!isNothing2ndTime) {
 					isNothing2ndTime = TRUE;
-					TURN_Turn(TURN_LEFT_CURVE, NULL);
-					vTaskDelay(pdMS_TO_TICKS(200));
+				    do {
+						TURN_Turn(TURN_LEFT15, NULL);
+						vTaskDelay(pdMS_TO_TICKS(100));
+						lineKind = REF_GetLineKind();
+					} while (lineKind != REF_LINE_STRAIGHT);
 					DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
-				    LF_currState = STATE_FOLLOW_SEGMENT;
+					LF_currState = STATE_FOLLOW_SEGMENT;
 				} else {
-					isNothing2ndTime = TRUE;
-					TURN_Turn(TURN_RIGHT_CURVE, NULL);
-					vTaskDelay(pdMS_TO_TICKS(200));
+					isNothing2ndTime = FALSE;
+					do {
+						TURN_Turn(TURN_RIGHT15, NULL);
+						vTaskDelay(pdMS_TO_TICKS(100));
+						lineKind = REF_GetLineKind();
+					} while (lineKind != REF_LINE_STRAIGHT);
 					DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
 					LF_currState = STATE_FOLLOW_SEGMENT;
 				}
