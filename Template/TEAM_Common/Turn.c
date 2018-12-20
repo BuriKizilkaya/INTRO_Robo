@@ -35,9 +35,9 @@
   /*!< number of steps for a 90 degree turn */
 #define TURN_STEPS_LINE       100
   /*!< number of steps stepping over the line */
-#define TURN_STEPS_POST_LINE  50
+#define TURN_STEPS_POST_LINE  80
   /*!< number of steps after the line, before making a turn */
-#define TURN_STEPS_90_TIMEOUT_MS        1000
+#define TURN_STEPS_90_TIMEOUT_MS        4*100
 #define TURN_STEPS_LINE_TIMEOUT_MS      200
 #define TURN_STEPS_POST_LINE_TIMEOUT_MS 200
 #define TURN_STEPS_STOP_TIMEOUT_MS      150
@@ -92,7 +92,7 @@ void TURN_MoveToPos(int32_t targetLPos, int32_t targetRPos, bool wait, TURN_Stop
       break;
     }
   } /* for */
-#if PL_CONFIG_HAS_SHELL
+#if 1 && PL_CONFIG_HAS_SHELL
   if (timeoutMs<=0) {
     SHELL_SendString((unsigned char*)"MoveToPos Timeout.\r\n");
   }
@@ -112,7 +112,7 @@ static void StepsTurn(int32_t stepsL, int32_t stepsR, TURN_StopFct stopIt, int32
     timeout-=5;
     WAIT1_WaitOSms(5);
   }
-#if PL_CONFIG_HAS_SHELL
+#if 1 && PL_CONFIG_HAS_SHELL
   if (timeout<=0) {
     SHELL_SendString((unsigned char*)"StepsTurn Stopping Timeout.\r\n");
   }
@@ -127,13 +127,18 @@ static void StepsTurn(int32_t stepsL, int32_t stepsR, TURN_StopFct stopIt, int32
 void TURN_Turn(TURN_Kind kind, TURN_StopFct stopIt) {
   switch(kind) {
 	  case TURN_LEFT15:
-		  StepsTurn(-TURN_Steps90/5, TURN_Steps90/5, stopIt, TURN_STEPS_90_TIMEOUT_MS/5);
+		  StepsTurn(-TURN_Steps90/4, TURN_Steps90/4, stopIt, TURN_STEPS_90_TIMEOUT_MS/4);
 		  break;
-
 	  case TURN_RIGHT15:
-		  StepsTurn(TURN_Steps90/5, -TURN_Steps90/5, stopIt, TURN_STEPS_90_TIMEOUT_MS/5);
+		  StepsTurn(TURN_Steps90/4, -TURN_Steps90/4, stopIt, TURN_STEPS_90_TIMEOUT_MS/4);
+		  break;
+	  case TURN_RIGHT_CURVE:
+		  StepsTurn(3*TURN_Steps90/2, -3*TURN_Steps90/2, stopIt, 3*TURN_STEPS_90_TIMEOUT_MS/2);
 		  break;
 
+	  case TURN_LEFT_CURVE:
+		  StepsTurn(-3*TURN_Steps90/2, 3*TURN_Steps90/2, stopIt, 3*TURN_STEPS_90_TIMEOUT_MS/2);
+		  break;
     case TURN_LEFT45:
       StepsTurn(-TURN_Steps90/2, TURN_Steps90/2, stopIt, TURN_STEPS_90_TIMEOUT_MS/2);
       break;

@@ -89,6 +89,8 @@ static void StateMachine(void) {
 	REF_LineKind lineKind;
 #endif
 
+  static bool isNothing2ndTime;
+
   switch (LF_currState) {
     case STATE_IDLE:
       break;
@@ -102,12 +104,27 @@ static void StateMachine(void) {
       break;
 #if PL_CONFIG_HAS_TURN
     case STATE_TURN:
+      vTaskDelay(pdMS_TO_TICKS(50));
       lineKind = REF_GetLineKind();
 		switch (lineKind) {
 			case REF_LINE_FULL:
-//				LF_currState = STATE_FINISHED;
-				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+				vTaskDelay(pdMS_TO_TICKS(20));
+				if (lineKind != REF_LINE_FULL) {
+					LF_currState = STATE_FOLLOW_SEGMENT;
+					break;
+				}
+				TURN_Turn(TURN_STEP_POST_LINE_FW, NULL);
+				vTaskDelay(pdMS_TO_TICKS(20));
+				DRV_SetMode(DRV_MODE_NONE);
+
+				lineKind = REF_GetLineKind();
+				if(lineKind == REF_LINE_FULL){
+					DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+					LF_currState = STATE_FINISHED;
+					break;
+				}
 				LF_currState = STATE_FOLLOW_SEGMENT;
+//				LF_currState = STATE_FINISHED;
 				// Play Christmas-sounds
 				break;
 			case REF_LINE_STRAIGHT:
@@ -115,21 +132,39 @@ static void StateMachine(void) {
 				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 			case REF_LINE_LEFT:
-				TURN_Turn(TURN_LEFT15, NULL);
+				do {
+					TURN_Turn(TURN_LEFT15, NULL);
+					vTaskDelay(pdMS_TO_TICKS(50));
+					lineKind = REF_GetLineKind();
+				} while (lineKind != REF_LINE_STRAIGHT);
 				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
 				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 
 			case REF_LINE_RIGHT:
-				TURN_Turn(TURN_RIGHT15, NULL);
+				do {
+					TURN_Turn(TURN_RIGHT15, NULL);
+					vTaskDelay(pdMS_TO_TICKS(50));
+					lineKind = REF_GetLineKind();
+				} while (lineKind != REF_LINE_STRAIGHT);
 				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
 				LF_currState = STATE_FOLLOW_SEGMENT;
 				break;
 
 			case REF_LINE_NONE:
-				TURN_Turn(TURN_LEFT180, NULL);
-				DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
-				LF_currState = STATE_FOLLOW_SEGMENT;
+				if (!isNothing2ndTime) {
+					isNothing2ndTime = TRUE;
+					TURN_Turn(TURN_LEFT_CURVE, NULL);
+					vTaskDelay(pdMS_TO_TICKS(200));
+					DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+				    LF_currState = STATE_FOLLOW_SEGMENT;
+				} else {
+					isNothing2ndTime = TRUE;
+					TURN_Turn(TURN_RIGHT_CURVE, NULL);
+					vTaskDelay(pdMS_TO_TICKS(200));
+					DRV_SetMode(DRV_MODE_NONE); /* disable position mode */
+					LF_currState = STATE_FOLLOW_SEGMENT;
+				}
 				break;
 
 			default:
@@ -242,7 +277,7 @@ void LF_Deinit(void) {
 
 void LF_Init(void) {
   LF_currState = STATE_IDLE;
-  if (xTaskCreate(LineTask, "Line", 400/sizeof(StackType_t), NULL, tskIDLE_PRIORITY, &LFTaskHandle) != pdPASS) {
+  if (xTaskCreate(LineTask, "Line", 500/sizeof(StackType_t), NULL, tskIDLE_PRIORITY, &LFTaskHandle) != pdPASS) {
     for(;;){} /* error */
   }
 }

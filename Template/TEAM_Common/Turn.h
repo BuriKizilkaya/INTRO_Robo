@@ -15,6 +15,8 @@
 typedef enum {
   TURN_LEFT15,
   TURN_RIGHT15,
+  TURN_LEFT_CURVE,
+  TURN_RIGHT_CURVE,
   TURN_LEFT45,   /* turn 45 degree left and stop */
   TURN_LEFT90,   /* turn 90 degree left and stop */
   TURN_RIGHT45, /* turn 90 degree right and stop */

@@ -84,6 +84,12 @@ static const BUZ_Tune MelodyButtonLong[] =
     {250,200},
 };
 
+static const BUZ_Tune_ChristmasSound[] =
+{
+	/* freq, ms */
+	{500,50}
+};
+
 typedef struct {
   int idx; /* current index */
   int maxIdx; /* maximum index */
