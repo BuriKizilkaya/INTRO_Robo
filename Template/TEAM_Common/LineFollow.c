@@ -96,7 +96,7 @@ static void StateMachine(void) {
       break;
 
     case STATE_FOLLOW_SEGMENT:
-    	vTaskDelay(pdMS_TO_TICKS(50));
+//    	vTaskDelay(pdMS_TO_TICKS(50));
       if (!FollowSegment()) {
         //SHELL_SendString((unsigned char*)"No line, stopped!\r\n");
         //LF_currState = STATE_STOP; /* stop if we do not have a line any more */
@@ -105,7 +105,7 @@ static void StateMachine(void) {
       break;
 #if PL_CONFIG_HAS_TURN
     case STATE_TURN:
-      vTaskDelay(pdMS_TO_TICKS(50));
+//      vTaskDelay(pdMS_TO_TICKS(50));
       lineKind = REF_GetLineKind();
 		switch (lineKind) {
 			case REF_LINE_FULL:
